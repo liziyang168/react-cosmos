@@ -3,7 +3,7 @@ import type { BuildErrorMessage, RendererResponse } from 'react-cosmos-core';
 import { rendererSocketMessage, serverSocketMessage } from 'react-cosmos-core';
 import { loadPlugins, resetPlugins } from 'react-plugin';
 import { vi } from 'vitest';
-import { WebSocketServer } from 'ws';
+import WebSocket, { WebSocketServer } from 'ws';
 import {
   getMessageHandlerMethods,
   mockCore,
@@ -11,10 +11,18 @@ import {
 } from '../../testHelpers/pluginMocks.js';
 import { register } from './index.js';
 
+const originalWebSocket = global.WebSocket;
+
 beforeAll(() => {
+  global.WebSocket = WebSocket as unknown as typeof global.WebSocket;
+
   const testWindow = window as any;
   delete testWindow.location;
   testWindow.location = { origin: 'http://localhost:8080' };
+});
+
+afterAll(() => {
+  global.WebSocket = originalWebSocket;
 });
 
 beforeEach(register);
@@ -30,16 +38,23 @@ async function withWebSocketServer(
   const onMessage = vi.fn();
 
   const wss = new WebSocketServer({ port: 8080 });
+  await new Promise<void>(resolve => {
+    wss.on('listening', resolve);
+  });
   wss.on('connection', ws => {
     ws.on('message', msg => {
       onMessage(JSON.parse(msg.toString()));
     });
   });
 
-  await cb({ wss, onMessage });
-
-  wss.clients.forEach(client => client.close());
-  wss.close();
+  try {
+    await cb({ wss, onMessage });
+  } finally {
+    wss.clients.forEach(client => client.close());
+    await new Promise<void>(resolve => {
+      wss.close(() => resolve());
+    });
+  }
 }
 
 function registerTestPlugins() {

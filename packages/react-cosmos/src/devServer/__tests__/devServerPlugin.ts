@@ -1,5 +1,3 @@
-// @vitest-environment jsdom
-
 // WARNING: Module mocks need to be imported before the mocked modules are
 // imported, which are sometimes imported indirectly by the modules being
 // tested. Otherwise the mocks will be applied too late and the tests will run
@@ -16,6 +14,7 @@ import { setTimeout } from 'node:timers/promises';
 import retry from '@skidding/async-retry';
 import type { ServerMessage, SocketMessage } from 'react-cosmos-core';
 import { vi } from 'vitest';
+import WebSocket from 'ws';
 import type { DevServerPluginArgs } from '../../cosmosPlugin/types.js';
 import { mockConsole } from '../../testHelpers/mockConsole.js';
 import { viteWorkerId } from '../../testHelpers/viteUtils.js';
@@ -102,15 +101,20 @@ it('calls dev server hook with send message API', async () => {
   };
 
   const onMessage = vi.fn();
-  client.addEventListener('open', () => {
-    client.addEventListener('message', msg => onMessage(msg.data));
+  client.on('message', msg => onMessage(msg.toString()));
 
+  try {
+    await waitForOpen(client);
     const [args] = testServerPlugin.devServer.mock
       .calls[0] as DevServerPluginArgs[];
     args.sendMessage(message.message);
-  });
 
-  await retry(() => expect(onMessage).toBeCalledWith(JSON.stringify(message)));
+    await retry(() =>
+      expect(onMessage).toBeCalledWith(JSON.stringify(message))
+    );
+  } finally {
+    client.close();
+  }
 });
 
 it('embeds plugin in playground HTML', async () => {
@@ -125,3 +129,13 @@ it('calls dev server cleanup hook', async () => {
   await _stopServer!();
   expect(devServerCleanup).toBeCalled();
 });
+
+function waitForOpen(client: WebSocket) {
+  if (client.readyState === WebSocket.OPEN) {
+    return Promise.resolve();
+  }
+
+  return new Promise<void>(resolve => {
+    client.once('open', resolve);
+  });
+}
