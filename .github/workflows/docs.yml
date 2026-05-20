@@ -7,12 +7,12 @@ jobs:
   build-demo:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v5
         with:
-          node-version: '20'
+          node-version: '24'
 
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         id: npm-cache
         with:
           path: .npm-cache
@@ -22,7 +22,7 @@ jobs:
       - run: npm run build
       - run: npm --workspace example-todo run export
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: demo-cosmos-export
           path: ./examples/todo/cosmos-export
@@ -38,12 +38,12 @@ jobs:
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v5
         with:
-          node-version: '20'
+          node-version: '24'
 
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         id: npm-cache
         with:
           path: ./docs/.npm-cache
@@ -55,12 +55,12 @@ jobs:
       # Revisit linting configs when upgrading Next & Nextra.
       - run: npm run build
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v7
         with:
           name: demo-cosmos-export
           path: ./docs/out/demo
 
-      - uses: cloudflare/wrangler-action@v3
+      - uses: cloudflare/wrangler-action@v4
         if: env.CLOUDFLARE_API_TOKEN != ''
         with:
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -71,7 +71,7 @@ jobs:
       # Forks don't have access to secrets and can't deploy to Cloudflare.
       # Instead, we upload the docs build as an artifact, which can be downloaded
       # and reviewed by maintainers locally.
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: env.CLOUDFLARE_API_TOKEN == ''
         with:
           name: react-cosmos-docs

@@ -15,12 +15,12 @@ jobs:
     runs-on: ${{ matrix.os }}-latest
     steps:
       - run: git config --global core.autocrlf false
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v5
         with:
           node-version: '24'
 
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         id: npm-cache
         with:
           path: .npm-cache
@@ -35,7 +35,7 @@ jobs:
       - run: npm run lint
       - run: npm run test:run -- --coverage
 
-      - uses: codecov/codecov-action@v4
+      - uses: codecov/codecov-action@v6
         # Only report coverage once
         if: matrix.os == 'ubuntu'
         with:
@@ -72,12 +72,12 @@ jobs:
             lazy: true
     runs-on: ${{ matrix.os }}-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v5
         with:
           node-version: ${{ matrix.node-version }}
 
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         id: npm-cache
         with:
           path: .npm-cache
@@ -87,11 +87,11 @@ jobs:
       - run: npm run build
 
       # Cache Playwright binaries
-      - uses: actions/cache@v4
+      - uses: actions/cache@v5
         id: playwright-cache
         with:
           path: ${{ matrix.os == 'windows' && 'C:\Users\runneradmin\AppData\Local\ms-playwright' || '~/.cache/ms-playwright' }}
-          key: '${{ runner.os }}-playwright-1.59.1'
+          key: '${{ runner.os }}-playwright-1.60.0'
 
       # https://playwright.dev/docs/browsers#install-system-dependencies
       - if: steps.playwright-cache.outputs.cache-hit != 'true'
@@ -116,7 +116,7 @@ jobs:
           TEST_EXAMPLE_NAME: ${{ matrix.example }}
           TEST_LAZY: ${{ matrix.lazy }}
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: playwright-report-${{ matrix.example }}-${{ matrix.os }}-node${{ matrix.node-version }}${{ matrix.lazy == true && '-lazy' || '' }}
