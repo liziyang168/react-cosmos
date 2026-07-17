@@ -12,9 +12,9 @@
     "native": "cosmos-native"
   },
   "dependencies": {
-    "@babel/core": "7.29.7",
-    "@babel/preset-react": "7.29.7",
-    "@babel/preset-typescript": "7.29.7",
+    "@babel/core": "8.0.1",
+    "@babel/preset-react": "8.0.1",
+    "@babel/preset-typescript": "8.0.1",
     "@mdx-js/loader": "3.1.1",
     "@pmmmwh/react-refresh-webpack-plugin": "0.6.2",
     "babel-loader": "10.1.1",
