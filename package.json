@@ -27,6 +27,7 @@
     "release:next": "npm run release:check && lerna publish --dist-tag=next --exact -m \"[release] %s\""
   },
   "devDependencies": {
+    "@babel/core": "8.0.1",
     "@playwright/test": "1.61.1",
     "@skidding/async-retry": "4.0.0",
     "@testing-library/jest-dom": "6.9.1",
