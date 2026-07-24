@@ -5,14 +5,14 @@ Target end state: **~250MB**, keeping only toolchain that's genuinely used.
 
 ## Where the 605MB goes
 
-| Group | Size | Why it's there |
-| --- | --- | --- |
-| react-native ecosystem (RN, Hermes, Metro, `@react-native`, devtools) | ~200MB | Type-checks 100 lines in `react-cosmos-native` |
-| Lerna ecosystem (lerna, nx, `@nx`, `@octokit`, node-gyp, conventional-changelog…) | ~110MB | Only `lerna publish` in release scripts |
-| TS 7 native binary + tsc | ~30MB | The compiler — keep |
-| oxlint/oxfmt binaries | ~28MB | Lint/format — keep |
-| Babel 8 + babel-loader + `core-js-pure` (webpack example) | ~45MB | Webpack example transform + react-refresh |
-| Everything else (vite/rolldown, esbuild, webpack, playwright, jsdom…) | ~190MB | Legit toolchain |
+| Group                                                                             | Size   | Why it's there                                 |
+| --------------------------------------------------------------------------------- | ------ | ---------------------------------------------- |
+| react-native ecosystem (RN, Hermes, Metro, `@react-native`, devtools)             | ~200MB | Type-checks 100 lines in `react-cosmos-native` |
+| Lerna ecosystem (lerna, nx, `@nx`, `@octokit`, node-gyp, conventional-changelog…) | ~110MB | Only `lerna publish` in release scripts        |
+| TS 7 native binary + tsc                                                          | ~30MB  | The compiler — keep                            |
+| oxlint/oxfmt binaries                                                             | ~28MB  | Lint/format — keep                             |
+| Babel 8 + babel-loader + `core-js-pure` (webpack example)                         | ~45MB  | Webpack example transform + react-refresh      |
+| Everything else (vite/rolldown, esbuild, webpack, playwright, jsdom…)             | ~190MB | Legit toolchain                                |
 
 ## Key findings
 
